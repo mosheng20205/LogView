@@ -334,6 +334,10 @@ DLL 接收 UTF-8 字符串。C#、Python、易语言、火山视窗等语言调�
 
 LogView 的透明度主要作用于绘制背景，文字保持不透明，以保证日志可读性。
 
+## 许可证
+
+本项目基于 MIT License 开源，详见 `LICENSE`。
+
 ## 开源发布说明
 
 本仓库的 `.gitignore` 已经忽略常见构建产物，但会保留发布必须的两个 DLL：
@@ -345,6 +349,5 @@ dist/x64/LogView_x64.dll
 
 发布到 GitHub 前，建议补充：
 
-- `LICENSE` 文件，并在本 README 中注明许可证。
 - GitHub 仓库描述、Topics 和 Release 包说明。
 - 如果需要对外稳定分发，可以在 Release 中附带 `dist/include/LogView.h` 和对应 DLL。
