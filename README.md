@@ -8,6 +8,7 @@ LogView 是一个 Windows 原生日志窗口 DLL，用于在 C/C++、C#、Python
 
 - 支持 32 位和 64 位程序调用。
 - 支持独立悬浮窗口和嵌入式子窗口。
+- 支持同时创建多个独立悬浮日志框，每个窗口都有自己的句柄、内容和样式。
 - 支持半透明背景，文字保持清晰不透明。
 - 支持普通、成功、警告、错误、调试、自定义等级日志。
 - 支持日志自动滚动、清空、导出文本和保存到文件。
@@ -58,6 +59,19 @@ LogView_Show()
 LogView_AddLine() / LogView_AddLineEx()
 LogView_Destroy()
 LogView_Uninit()
+```
+
+需要多开独立悬浮日志框时，重复调用 `LogView_CreatePopupEx` 即可。每次调用都会返回一个独立的 `LogViewHandle`，后续追加日志、清空、设置标题、销毁窗口时传入对应句柄：
+
+```text
+mainLog = LogView_CreatePopupEx(520, 420, 180)
+errorLog = LogView_CreatePopupEx(460, 360, 220)
+
+LogView_AddLine(mainLog, "主流程日志")
+LogView_AddLineEx(errorLog, "错误日志", 0xFFEF4444, LOGVIEW_LEVEL_ERROR)
+
+LogView_Destroy(mainLog)
+LogView_Destroy(errorLog)
 ```
 
 ## C/C++ 示例
@@ -333,6 +347,10 @@ DLL 接收 UTF-8 字符串。C#、Python、易语言、火山视窗等语言调�
 ### 透明后文字也变透明
 
 LogView 的透明度主要作用于绘制背景，文字保持不透明，以保证日志可读性。
+
+### 如何同时打开多个独立悬浮日志框
+
+多次调用 `LogView_CreatePopupEx`，保存每次返回的 `LogViewHandle`。每个句柄对应一个独立日志窗口，后续所有操作都传对应句柄即可。程序退出前分别调用 `LogView_Destroy`，或者统一调用 `LogView_DestroyAll`。
 
 ## 许可证
 
