@@ -4,7 +4,8 @@
 ' 使用前：
 ' 1. 32 位易语言程序把 dist\x86\LogView_x86.dll 复制到程序输出目录。
 ' 2. 64 位易语言程序把下面 DLL 名改成 LogView_x64.dll，并把句柄类型改成长整数型。
-' 3. LogView 接收 UTF-8 字符串。下面正文使用 ASCII，中文文本请先转 UTF-8 后再传入。
+' 3. LogView 的 const char* 入参在易语言里按“UTF-8 字节集”传入，不要直接声明成文本型。
+' 4. 示例里的 到UTF8字节集() 使用 编码_Ansi到Utf8()，如果你的编码库函数名不同，请替换这一处。
 
 .程序集 窗口程序集_启动窗口
 .程序集变量 日志句柄, 整数型
@@ -18,21 +19,21 @@
 
 日志句柄 ＝ LogView_CreatePopupEx (520, 380, 180)
 .如果真 (日志句柄 ＝ 0)
-    信息框 ("Create LogView failed: " ＋ LogView_GetLastErrorText (), 0, "LogView", )
+    信息框 ("创建日志窗口失败：" ＋ LogView_GetLastErrorText (), 0, "LogView", )
     返回 ()
 .如果真结束
 
-检查调用结果 (LogView_SetTitle (日志句柄, "E-Language LogView Demo"), "LogView_SetTitle")
+检查调用结果 (LogView_SetTitle (日志句柄, 到UTF8字节集 ("易语言 LogView 日志窗口")), "LogView_SetTitle")
 检查调用结果 (LogView_SetTopMost (日志句柄, 1), "LogView_SetTopMost")
 检查调用结果 (LogView_SetRoundCorner (日志句柄, 12), "LogView_SetRoundCorner")
 检查调用结果 (LogView_SetMaxLines (日志句柄, 300), "LogView_SetMaxLines")
 检查调用结果 (LogView_SetAutoScroll (日志句柄, 1), "LogView_SetAutoScroll")
 检查调用结果 (LogView_Show (日志句柄), "LogView_Show")
 
-LogView_AddLine (日志句柄, "LogView started.")
-LogView_AddLineEx (日志句柄, "SUCCESS: DLL loaded.", -13053318, 1)
-LogView_AddLineEx (日志句柄, "WARNING: sample warning line.", -680437, 2)
-LogView_AddLineEx (日志句柄, "ERROR: sample error line.", -1096636, 3)
+LogView_AddLine (日志句柄, 到UTF8字节集 ("普通日志：窗口已经创建，准备接收输出。"))
+LogView_AddLineEx (日志句柄, 到UTF8字节集 ("成功：DLL 已加载，日志窗口显示正常。"), -13053318, 1)
+LogView_AddLineEx (日志句柄, 到UTF8字节集 ("警告：这里是一条中文警告日志。"), -680437, 2)
+LogView_AddLineEx (日志句柄, 到UTF8字节集 ("错误：这里是一条中文错误日志。"), -1096636, 3)
 
 .子程序 _按钮_追加日志_被单击
 
@@ -42,9 +43,9 @@ LogView_AddLineEx (日志句柄, "ERROR: sample error line.", -1096636, 3)
 
 日志序号 ＝ 日志序号 ＋ 1
 .如果 (日志序号 ％ 5 ＝ 0)
-    LogView_AddLineEx (日志句柄, "WARNING: counter reached a multiple of 5.", -680437, 2)
+    LogView_AddLineEx (日志句柄, 到UTF8字节集 ("警告：当前序号是 5 的倍数，请注意状态。"), -680437, 2)
 .否则
-    LogView_AddLineEx (日志句柄, "SUCCESS: append one log line.", -13053318, 1)
+    LogView_AddLineEx (日志句柄, 到UTF8字节集 ("成功：追加一条中文日志。"), -13053318, 1)
 .如果结束
 
 .子程序 _按钮_清空日志_被单击
@@ -78,10 +79,16 @@ LogView_Uninit ()
 .参数 动作名, 文本型
 
 .如果真 (返回值 ＝ 0)
-    信息框 (动作名 ＋ " failed: " ＋ LogView_GetLastErrorText (), 0, "LogView", )
+    信息框 (动作名 ＋ " 调用失败：" ＋ LogView_GetLastErrorText (), 0, "LogView", )
     返回 (假)
 .如果真结束
 返回 (真)
+
+.子程序 到UTF8字节集, 字节集
+.参数 原文本, 文本型
+
+' LogView DLL 接收 const char*，这里传入 UTF-8 字节集并补 0 结束符。
+返回 (编码_Ansi到Utf8 (原文本) ＋ { 0 })
 
 .DLL命令 LogView_Init, 整数型, "LogView_x86.dll", "LogView_Init"
 
@@ -106,7 +113,7 @@ LogView_Uninit ()
 
 .DLL命令 LogView_SetTitle, 整数型, "LogView_x86.dll", "LogView_SetTitle"
     .参数 句柄, 整数型
-    .参数 标题, 文本型
+    .参数 标题UTF8, 字节集
 
 .DLL命令 LogView_SetTopMost, 整数型, "LogView_x86.dll", "LogView_SetTopMost"
     .参数 句柄, 整数型
@@ -126,11 +133,11 @@ LogView_Uninit ()
 
 .DLL命令 LogView_AddLine, 整数型, "LogView_x86.dll", "LogView_AddLine"
     .参数 句柄, 整数型
-    .参数 文本, 文本型
+    .参数 文本UTF8, 字节集
 
 .DLL命令 LogView_AddLineEx, 整数型, "LogView_x86.dll", "LogView_AddLineEx"
     .参数 句柄, 整数型
-    .参数 文本, 文本型
+    .参数 文本UTF8, 字节集
     .参数 颜色, 整数型
     .参数 日志等级, 整数型
 

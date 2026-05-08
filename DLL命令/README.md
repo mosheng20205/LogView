@@ -273,7 +273,7 @@ Python 重点：
 - DLL 调用约定选择 `stdcall`。
 - 32 位易语言程序使用 `LogView_x86.dll`。
 - 如果使用 64 位环境，使用 `LogView_x64.dll`。
-- 字符串应按 UTF-8 传入；如果易语言内部是 ANSI/Unicode，需要先转换 UTF-8 字节。
+- `const char*` 入参在易语言里建议声明为 `字节集`，传入 UTF-8 字节集并补 `0` 结束符。
 - `LogViewHandle` 可以按整数型/长整数型保存，按程序位数选择合适类型。
 
 示例声明思路：
@@ -282,10 +282,19 @@ Python 重点：
 DLL命令 LogView_Init, 整数型, "LogView_x86.dll", "LogView_Init"
 DLL命令 LogView_Uninit, 整数型, "LogView_x86.dll", "LogView_Uninit"
 DLL命令 LogView_CreatePopupEx, 整数型, "LogView_x86.dll", "LogView_CreatePopupEx", 整数型, 整数型, 整数型
-DLL命令 LogView_SetTitle, 整数型, "LogView_x86.dll", "LogView_SetTitle", 整数型, 文本型
+DLL命令 LogView_SetTitle, 整数型, "LogView_x86.dll", "LogView_SetTitle", 整数型, 字节集
 DLL命令 LogView_Show, 整数型, "LogView_x86.dll", "LogView_Show", 整数型
-DLL命令 LogView_AddLine, 整数型, "LogView_x86.dll", "LogView_AddLine", 整数型, 文本型
+DLL命令 LogView_AddLine, 整数型, "LogView_x86.dll", "LogView_AddLine", 整数型, 字节集
 DLL命令 LogView_Destroy, 整数型, "LogView_x86.dll", "LogView_Destroy", 整数型
+```
+
+UTF-8 字节集封装示例：
+
+```text
+.子程序 到UTF8字节集, 字节集
+.参数 原文本, 文本型
+
+返回 (编码_Ansi到Utf8(原文本) ＋ { 0 })
 ```
 
 易语言推荐流程：
@@ -293,9 +302,9 @@ DLL命令 LogView_Destroy, 整数型, "LogView_x86.dll", "LogView_Destroy", 整�
 ```text
 LogView_Init()
 句柄 = LogView_CreatePopupEx(520, 420, 180)
-LogView_SetTitle(句柄, UTF8文本("易语言 日志窗口"))
+LogView_SetTitle(句柄, 到UTF8字节集("易语言 日志窗口"))
 LogView_Show(句柄)
-LogView_AddLine(句柄, UTF8文本("普通日志"))
+LogView_AddLine(句柄, 到UTF8字节集("普通日志：窗口启动"))
 程序退出时 LogView_Destroy(句柄)
 程序退出时 LogView_Uninit()
 ```
@@ -490,4 +499,3 @@ DLL 接收 UTF-8。调用方需要传 UTF-8 字节，而不是 ANSI、GBK 或 UT
 ### 如何多开？
 
 每次调用 `LogView_CreatePopupEx` 或 `LogView_CreateChildEx` 都会返回一个独立句柄。后续所有操作都传对应句柄即可。
-
