@@ -1,0 +1,79 @@
+# Build directories
+/build/
+/out/
+/.vs/
+/Debug/
+/Release/
+/x64/
+/x86/
+/Win32/
+
+# CMake generated files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CMakeUserPresets.json
+
+# Visual Studio / MSBuild generated files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.vcxproj.user
+*.vc.db
+*.VC.db
+*.opensdf
+*.sdf
+*.ipch
+*.aps
+*.tlog
+*.lastbuildstate
+*.recipe
+
+# Native build outputs
+*.obj
+*.pdb
+*.ilk
+*.idb
+*.iobj
+*.ipdb
+*.exe
+*.dll
+*.lib
+*.exp
+
+# Required release DLLs kept in the repository
+!dist/x64/LogView_x64.dll
+!dist/x86/LogView_x86.dll
+
+# .NET build outputs
+bin/
+obj/
+*.deps.json
+*.runtimeconfig.json
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Generated demo artifacts
+/LogViewCSharpDemo_*.png
+/examples/python/logview_python_export.txt
+
+# Local/editor files
+.claude/
+.vscode/
+.idea/
+*.log
+*.tmp
+*.temp
+Thumbs.db
+Desktop.ini
+
+# Local agent/process notes
+AGENT.md
+CLAUDE.md
+process.md

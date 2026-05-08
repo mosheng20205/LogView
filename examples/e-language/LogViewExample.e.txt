@@ -1,0 +1,140 @@
+.版本 2
+
+' LogView 易语言调用示例
+' 使用前：
+' 1. 32 位易语言程序把 dist\x86\LogView_x86.dll 复制到程序输出目录。
+' 2. 64 位易语言程序把下面 DLL 名改成 LogView_x64.dll，并把句柄类型改成长整数型。
+' 3. LogView 接收 UTF-8 字符串。下面正文使用 ASCII，中文文本请先转 UTF-8 后再传入。
+
+.程序集 窗口程序集_启动窗口
+.程序集变量 日志句柄, 整数型
+.程序集变量 日志序号, 整数型
+
+.子程序 __启动窗口_创建完毕
+
+.如果真 (检查调用结果 (LogView_Init (), "LogView_Init") ＝ 假)
+    返回 ()
+.如果真结束
+
+日志句柄 ＝ LogView_CreatePopupEx (520, 380, 180)
+.如果真 (日志句柄 ＝ 0)
+    信息框 ("Create LogView failed: " ＋ LogView_GetLastErrorText (), 0, "LogView", )
+    返回 ()
+.如果真结束
+
+检查调用结果 (LogView_SetTitle (日志句柄, "E-Language LogView Demo"), "LogView_SetTitle")
+检查调用结果 (LogView_SetTopMost (日志句柄, 1), "LogView_SetTopMost")
+检查调用结果 (LogView_SetRoundCorner (日志句柄, 12), "LogView_SetRoundCorner")
+检查调用结果 (LogView_SetMaxLines (日志句柄, 300), "LogView_SetMaxLines")
+检查调用结果 (LogView_SetAutoScroll (日志句柄, 1), "LogView_SetAutoScroll")
+检查调用结果 (LogView_Show (日志句柄), "LogView_Show")
+
+LogView_AddLine (日志句柄, "LogView started.")
+LogView_AddLineEx (日志句柄, "SUCCESS: DLL loaded.", -13053318, 1)
+LogView_AddLineEx (日志句柄, "WARNING: sample warning line.", -680437, 2)
+LogView_AddLineEx (日志句柄, "ERROR: sample error line.", -1096636, 3)
+
+.子程序 _按钮_追加日志_被单击
+
+.如果真 (日志句柄 ＝ 0)
+    返回 ()
+.如果真结束
+
+日志序号 ＝ 日志序号 ＋ 1
+.如果 (日志序号 ％ 5 ＝ 0)
+    LogView_AddLineEx (日志句柄, "WARNING: counter reached a multiple of 5.", -680437, 2)
+.否则
+    LogView_AddLineEx (日志句柄, "SUCCESS: append one log line.", -13053318, 1)
+.如果结束
+
+.子程序 _按钮_清空日志_被单击
+
+.如果真 (日志句柄 ≠ 0)
+    LogView_Clear (日志句柄)
+.如果真结束
+
+.子程序 _按钮_隐藏显示_被单击
+
+.如果真 (日志句柄 ＝ 0)
+    返回 ()
+.如果真结束
+
+.如果 (LogView_IsVisible (日志句柄) ＝ 0)
+    LogView_Show (日志句柄)
+.否则
+    LogView_Hide (日志句柄)
+.如果结束
+
+.子程序 __启动窗口_将被销毁
+
+.如果真 (日志句柄 ≠ 0)
+    LogView_Destroy (日志句柄)
+    日志句柄 ＝ 0
+.如果真结束
+LogView_Uninit ()
+
+.子程序 检查调用结果, 逻辑型
+.参数 返回值, 整数型
+.参数 动作名, 文本型
+
+.如果真 (返回值 ＝ 0)
+    信息框 (动作名 ＋ " failed: " ＋ LogView_GetLastErrorText (), 0, "LogView", )
+    返回 (假)
+.如果真结束
+返回 (真)
+
+.DLL命令 LogView_Init, 整数型, "LogView_x86.dll", "LogView_Init"
+
+.DLL命令 LogView_Uninit, 整数型, "LogView_x86.dll", "LogView_Uninit"
+
+.DLL命令 LogView_CreatePopupEx, 整数型, "LogView_x86.dll", "LogView_CreatePopupEx"
+    .参数 宽度, 整数型
+    .参数 高度, 整数型
+    .参数 透明度, 整数型
+
+.DLL命令 LogView_Destroy, 整数型, "LogView_x86.dll", "LogView_Destroy"
+    .参数 句柄, 整数型
+
+.DLL命令 LogView_Show, 整数型, "LogView_x86.dll", "LogView_Show"
+    .参数 句柄, 整数型
+
+.DLL命令 LogView_Hide, 整数型, "LogView_x86.dll", "LogView_Hide"
+    .参数 句柄, 整数型
+
+.DLL命令 LogView_IsVisible, 整数型, "LogView_x86.dll", "LogView_IsVisible"
+    .参数 句柄, 整数型
+
+.DLL命令 LogView_SetTitle, 整数型, "LogView_x86.dll", "LogView_SetTitle"
+    .参数 句柄, 整数型
+    .参数 标题, 文本型
+
+.DLL命令 LogView_SetTopMost, 整数型, "LogView_x86.dll", "LogView_SetTopMost"
+    .参数 句柄, 整数型
+    .参数 是否置顶, 整数型
+
+.DLL命令 LogView_SetRoundCorner, 整数型, "LogView_x86.dll", "LogView_SetRoundCorner"
+    .参数 句柄, 整数型
+    .参数 圆角半径, 整数型
+
+.DLL命令 LogView_SetMaxLines, 整数型, "LogView_x86.dll", "LogView_SetMaxLines"
+    .参数 句柄, 整数型
+    .参数 最大行数, 整数型
+
+.DLL命令 LogView_SetAutoScroll, 整数型, "LogView_x86.dll", "LogView_SetAutoScroll"
+    .参数 句柄, 整数型
+    .参数 是否自动滚动, 整数型
+
+.DLL命令 LogView_AddLine, 整数型, "LogView_x86.dll", "LogView_AddLine"
+    .参数 句柄, 整数型
+    .参数 文本, 文本型
+
+.DLL命令 LogView_AddLineEx, 整数型, "LogView_x86.dll", "LogView_AddLineEx"
+    .参数 句柄, 整数型
+    .参数 文本, 文本型
+    .参数 颜色, 整数型
+    .参数 日志等级, 整数型
+
+.DLL命令 LogView_Clear, 整数型, "LogView_x86.dll", "LogView_Clear"
+    .参数 句柄, 整数型
+
+.DLL命令 LogView_GetLastErrorText, 文本型, "LogView_x86.dll", "LogView_GetLastErrorText"
